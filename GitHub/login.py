@@ -4,6 +4,7 @@
 """
 1. get login html token
 2. login
+3. pip install -U requests[socks] 使用代理连接github
 """
 
 import requests
@@ -19,10 +20,14 @@ class Login(object):
             'Host': 'github.com'
         }
 
+        self.proxies = {
+            'http': 'socks5://192.168.2.216:1080',
+            'https': 'socks5://192.168.2.216:1080'
+        }
         self.login_url = 'https://github.com/login'
         self.post_url = 'https://github.com/session'
         self.session = requests.Session()
-
+        self.session.proxies = self.proxies
         self.username = username
         self.password = password
 
@@ -60,7 +65,7 @@ class Login(object):
         :return:
         """
 
-        response = self.session.get(self.login_url, headers=self.headers)
+        response = self.session.get(self.login_url, headers=self.headers,proxies=dict(http='socks5://192.168.2.216:1080',https='socks5://192.168.2.216:1080'))
         html = etree.HTML(response.content.decode())
 
         token = html.xpath('//input[@name="authenticity_token"]/@value')[0]
